@@ -191,9 +191,10 @@ class ValidationController extends GetxController {
       var customersList = await databaseHelper.getCustomers();
       customers.assignAll(customersList);
     } catch (e) {
-      print("Error fetching customers: $e");
+      debugPrint("Error fetching customers: $e");
     }
   }
+
 
   Future<void> removeCustomer(int index) async {
     try {
@@ -201,7 +202,7 @@ class ValidationController extends GetxController {
       await databaseHelper.deleteCustomer(customer['id']);
       customers.removeAt(index);
     } catch (e) {
-      print("Error removing customer: $e");
+      debugPrint("Error removing customer: $e");
     }
   }
 

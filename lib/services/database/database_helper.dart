@@ -3,14 +3,13 @@ import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
 class DatabaseHelper {
-  
   static final DatabaseHelper _instance = DatabaseHelper._internal();
   factory DatabaseHelper() => _instance;
 
   static Database? _database;
 
   DatabaseHelper._internal();
- 
+
   Future<Database> get database async {
     if (_database != null) return _database!;
     _database = await _initDatabase();
@@ -71,7 +70,8 @@ class DatabaseHelper {
 
   Future<List<Map<String, dynamic>>> getAddresses(int customerId) async {
     final db = await database;
-    return await db.query('address', where: 'customer_id = ?', whereArgs: [customerId]);
+    return await db
+        .query('address', where: 'customer_id = ?', whereArgs: [customerId]);
   }
 
   Future<int> updateCustomer(Map<String, dynamic> customer) async {
@@ -111,7 +111,7 @@ class DatabaseHelper {
       whereArgs: [id],
     );
   }
-  
+
   Future close() async {
     final db = await _instance.database;
     db.close();

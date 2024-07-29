@@ -11,18 +11,23 @@ class CustomerListing extends StatefulWidget {
 }
 
 class _CustomerListingState extends State<CustomerListing> {
+  final controller = Get.find<ValidationController>();
+
+  @override
+  void initState() {
+    super.initState();
+    controller.fetchCustomers();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final controller = Get.find<ValidationController>();
-    @override
-    void initState() {
-      super.initState();
-      controller.fetchCustomers();
-    }
-
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Customer Listings"),
+        title: const Text(
+          "Customer Listings",
+          style: TextStyle(
+              fontWeight: FontWeight.bold, fontSize: 24, color: Colors.black),
+        ),
       ),
       body: Obx(() {
         if (controller.customers.isEmpty) {
@@ -32,32 +37,72 @@ class _CustomerListingState extends State<CustomerListing> {
             itemCount: controller.customers.length,
             itemBuilder: (context, index) {
               final customer = controller.customers[index];
-              return ListTile(
-                title: Text(
-                  customer['full_name'],
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 24,
-                      color: Colors.black),
+              controller.loadCustomerDetails(customer);
+
+              return Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ListTile(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      side: BorderSide(color: Colors.grey)),
+                  title: Text(
+                    customer['full_name'],
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        color: Colors.black),
+                  ),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(customer['email']),
+                      Text(customer['phone']),
+                      SizedBox(
+                        child: ListView.builder(
+                            shrinkWrap: true,
+                            physics: NeverScrollableScrollPhysics(),
+                            itemCount: controller.addresses.length,
+                            itemBuilder: (context, index) {
+                              var address = controller.addresses[index];
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                      "Address Line 1: ${address.addressLine1.text}"),
+                                  Text(
+                                      "Address Line 2: ${address.addressLine2.text}"),
+                                  Text("Postcode: ${address.postcode.text}"),
+                                  Text("State: ${address.state.text}"),
+                                  Text("City: ${address.city.text}"),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 12.0),
+                                    child: Wrap(
+                                      children: [
+                                        GestureDetector(
+                                            onTap: () {},
+                                            child: Icon(Iconsax.edit)),
+                                        const SizedBox(
+                                          width: 12,
+                                        ),
+                                        GestureDetector(
+                                            onTap: () {
+                                              controller.removeCustomer(index);
+                                            },
+                                            child: Icon(Iconsax.trash)),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              );
+                            }),
+                      )
+                    ],
+                  ),
+                  onTap: () {
+                    // You can add navigation to customer details here
+                  },
                 ),
-                subtitle: Text(customer['email']),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                        onPressed: () {
-                          
-                        }, icon: const Icon(Iconsax.edit)),
-                    IconButton(
-                        onPressed: () {
-                          controller.removeCustomer(index);
-                        },
-                        icon: const Icon(Iconsax.trash))
-                  ],
-                ),
-                onTap: () {
-                  // You can add navigation to customer details here
-                },
               );
             },
           );
