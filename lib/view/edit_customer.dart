@@ -15,12 +15,12 @@ class EditCustomer extends StatefulWidget {
 }
 
 class _EditCustomerState extends State<EditCustomer> {
-  final controller = Get.put(ValidationController());
+  final controller = Get.find<ValidationController>();
 
   final formKey = GlobalKey<FormState>();
   @override
   void initState() {
-    controller.loadCustomerDetails(widget.customer); // Pre-load customer data
+    controller.loadCustomerDetails(widget.customer);// Pre-load customer data
 
     super.initState();
   }
@@ -45,31 +45,29 @@ class _EditCustomerState extends State<EditCustomer> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Your input fields here, similar to AddCustomer
-                Obx(() {
-                  return InputField(
-                    icon: Iconsax.card,
-                    label: "PAN",
-                    controller: controller.pan,
-                    validator: (value) => controller.panValidator(value!),
-                    onChanged: (value) {
-                      if (controller.panRequirement.hasMatch(value)) {
-                        controller.verifyPAN(value);
-                      }
-                    },
-                    suffixIcon: controller.isLoadingPAN.value
-                        ? const Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: SizedBox(
-                              height: 5,
-                              width: 5,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2.0,
-                              ),
+                InputField(
+                  icon: Iconsax.card,
+                  label: "PAN",
+                  controller: controller.pan.value,
+                  validator: (value) => controller.panValidator(value!),
+                  onChanged: (value) {
+                    if (controller.panRequirement.hasMatch(value)) {
+                      controller.verifyPAN(value);
+                    }
+                  },
+                  suffixIcon: controller.isLoadingPAN.value
+                      ? const Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: SizedBox(
+                            height: 5,
+                            width: 5,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2.0,
                             ),
-                          )
-                        : null,
-                  );
-                }),
+                          ),
+                        )
+                      : null,
+                ),
                 Obx(() {
                   return InputField(
                     icon: Iconsax.user,
@@ -135,7 +133,8 @@ class _EditCustomerState extends State<EditCustomer> {
                       fillColor: Colors.lightBlueAccent,
                       onPressed: () {
                         if (formKey.currentState!.validate()) {
-                          controller.updateCustomerDetails(context,widget.customer['id']);
+                          controller.updateCustomerDetails(
+                              context, widget.customer['id']);
                         } else {
                           controller.showSnackBar("Fix the error", context);
                         }

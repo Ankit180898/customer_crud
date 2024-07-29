@@ -9,7 +9,7 @@ import 'package:http/http.dart' as http;
 
 class ValidationController extends GetxController {
   final DatabaseHelper databaseHelper = DatabaseHelper();
-  final pan = TextEditingController();
+  final pan = TextEditingController().obs;
   final fullName = TextEditingController().obs;
   final email = TextEditingController();
   final mobile = TextEditingController();
@@ -206,30 +206,38 @@ class ValidationController extends GetxController {
   }
 
   Future<void> loadCustomerDetails(Map<String, dynamic> customer) async {
-    pan.text = customer['pan'];
-    fullName.value.text = customer['full_name'];
-    email.text = customer['email'];
-    mobile.text = customer['phone'];
+    try {
+    pan.value.text = customer['pan'] ?? '';
+    fullName.value.text = customer['full_name'] ?? '';
+    email.text = customer['email'] ?? '';
+    mobile.text = customer['phone'] ?? '';
+    debugPrint('PAN: ${email.text}'); // Add this line to check PAN value
+      
+        List<Map<String, dynamic>> addressMaps =
+            await databaseHelper.getAddresses(customer['id']);
 
-    // Load addresses for the customer
-    addresses.assignAll((await databaseHelper.getAddresses(customer['id']))
-        as Iterable<Address>);
+        addresses.assignAll(addressMaps.map((map) {
+          return Address.fromJson(map);
+        }).toList());
+      } catch (e) {
+        debugPrint("Error loading customer details: $e");
+      }
   }
 
   // updating the data
   Future<void> updateCustomerDetails(
       BuildContext context, int customerId) async {
     try {
-      // Update customer details
+      // customers updation
       await databaseHelper.updateCustomer({
-        'id': customerId, // Set this to the customer's ID
+        'id': customerId,
         'pan': pan.value.text,
         'full_name': fullName.value.text,
         'email': email.value.text,
         'phone': mobile.value.text,
       });
 
-      // Update address
+      // Address updation
       for (var address in addresses) {
         await databaseHelper.updateAddress({
           'customer_id': customerId,
@@ -251,7 +259,7 @@ class ValidationController extends GetxController {
 
   @override
   void dispose() {
-    pan.dispose();
+    pan.value.dispose();
     email.dispose();
     mobile.dispose();
     databaseHelper.close();

@@ -38,7 +38,8 @@ class _CustomerListingState extends State<CustomerListing> {
             itemCount: controller.customers.length,
             itemBuilder: (context, index) {
               final customer = controller.customers[index];
-              controller.loadCustomerDetails(customer);
+              debugPrint("pan:${customer['pan']}");
+              // controller.loadCustomerDetails(customer);
 
               return Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -56,6 +57,7 @@ class _CustomerListingState extends State<CustomerListing> {
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      Text('Pan: ${customer['pan']}'),
                       Text('Email: ${customer['phone']}'),
                       Text('+91 ${customer['phone']}'),
                       const SizedBox(

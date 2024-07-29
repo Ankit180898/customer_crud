@@ -50,7 +50,8 @@ class AddCustomer extends StatelessWidget {
                 Obx(() {
                   return InputField(
                     icon: Iconsax.card,
-                    label: "PAN",                 
+                    label: "PAN",   
+                    controller: controller.pan.value,              
                     validator: (value) => controller.panValidator(value!),
                     onChanged: (value) {
                       // verify pan if the pan format is matched
