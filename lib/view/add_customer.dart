@@ -1,4 +1,5 @@
 import 'package:customer_crud/controller/validation_controller.dart';
+import 'package:customer_crud/view/components/address_form_widget.dart';
 import 'package:customer_crud/view/components/input_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -20,7 +21,11 @@ class AddCustomer extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text("Form validation"),
+        title: const Text(
+          "Customer CRUD",
+          style: TextStyle(
+              fontWeight: FontWeight.bold, fontSize: 24, color: Colors.black),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(12.0),
@@ -100,109 +105,9 @@ class AddCustomer extends StatelessWidget {
                           physics: const NeverScrollableScrollPhysics(),
                           itemCount: controller.addresses.length,
                           itemBuilder: (context, index) {
-                            return Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 12.0),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        "Address - ${index + 1}",
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 16,
-                                            color: Colors.black),
-                                      ),
-                                      if (controller.addresses.length > 1)
-                                        IconButton(
-                                          icon: const Icon(Icons.delete,
-                                              color: Colors.red),
-                                          onPressed: () =>
-                                              controller.removeAddress(index),
-                                        ),
-                                    ],
-                                  ),
-                                ),
-                                InputField(
-                                  icon: Iconsax.location,
-                                  label: "Address Line 1",
-                                  controller:
-                                      controller.addresses[index].addressLine1,
-                                  validator: (value) => controller.validator(
-                                      value!, "Address Line 1 is required"),
-                                ),
-                                InputField(
-                                  icon: Iconsax.location,
-                                  label: "Address Line 2",
-                                  controller:
-                                      controller.addresses[index].addressLine2,
-                                  validator: (value) => null,
-                                ),
-                                Obx(() {
-                                  return InputField(
-                                    icon: Iconsax.building,
-                                    label: "Postcode",
-                                    controller:
-                                        controller.addresses[index].postcode,
-                                    inputType: TextInputType.number,
-                                    inputFormat: [
-                                      FilteringTextInputFormatter.digitsOnly
-                                    ],
-                                    validator: (value) =>
-                                        controller.postcodeValidator(value!),
-                                    onChanged: (value) {
-                                      if (controller.postcodeRequirement
-                                          .hasMatch(value)) {
-                                        controller.getPostcodeDetails(
-                                            value, index);
-                                      }
-                                    },
-                                    suffixIcon: controller
-                                            .isLoadingPostcode.value
-                                        ? const Padding(
-                                            padding: EdgeInsets.all(8.0),
-                                            child: SizedBox(
-                                              height: 5,
-                                              width: 5,
-                                              child: CircularProgressIndicator(
-                                                strokeWidth: 2.0,
-                                              ),
-                                            ),
-                                          )
-                                        : null,
-                                  );
-                                }),
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: InputField(
-                                        icon: Iconsax.map,
-                                        label: "State",
-                                        controller:
-                                            controller.addresses[index].state,
-                                        validator: (value) =>
-                                            controller.validator(
-                                                value!, "State is required"),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      child: InputField(
-                                        icon: Iconsax.building,
-                                        label: "City",
-                                        controller:
-                                            controller.addresses[index].city,
-                                        validator: (value) =>
-                                            controller.validator(
-                                                value!, "City is required"),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
+                            return AddressFormWidget(
+                              index: index,
+                              controller: controller,
                             );
                           },
                         ),
@@ -220,7 +125,8 @@ class AddCustomer extends StatelessWidget {
                   );
                 }),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 12.0),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 8.0, vertical: 12.0),
                   child: SizedBox(
                     width: double.infinity,
                     height: 55,
@@ -233,6 +139,7 @@ class AddCustomer extends StatelessWidget {
                         if (formKey.currentState!.validate()) {
                           debugPrint("noice");
                           // navigate to the success screen
+                          controller.saveCustomerDetails(context);
                         } else {
                           controller.showSnackBar("Fix the error", context);
                         }

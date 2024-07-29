@@ -1,11 +1,14 @@
 import 'dart:convert';
 
 import 'package:customer_crud/model/address_model.dart';
+import 'package:customer_crud/services/database/database_helper.dart';
+import 'package:customer_crud/view/customers_listing.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
 class ValidationController extends GetxController {
+  final DatabaseHelper databaseHelper = DatabaseHelper();
   final pan = TextEditingController();
   final fullName = TextEditingController().obs;
   final email = TextEditingController();
@@ -13,6 +16,7 @@ class ValidationController extends GetxController {
 
   var isVisible = false.obs;
   var addresses = <Address>[].obs;
+  var customers = <Map<String, dynamic>>[].obs;
 
   final RegExp panRequirement = RegExp(r'^[A-Z]{5}[0-9]{4}[A-Z]$');
   final RegExp emailRequirement = RegExp(
@@ -152,11 +156,72 @@ class ValidationController extends GetxController {
     isLoadingPostcode.value = false;
   }
 
+  Future<void> saveCustomerDetails(BuildContext context) async {
+    try {
+      // Insert customer
+      int customerId = await databaseHelper.insertCustomer({
+        'pan': pan.value.text,
+        'full_name': fullName.value.text,
+        'email': email.value.text,
+        'phone': mobile.value.text,
+      });
+
+      // Insert addresses
+      for (var address in addresses) {
+        await databaseHelper.insertAddress({
+          'customer_id': customerId,
+          'address_line1': address.addressLine1.text,
+          'address_line2': address.addressLine2.text,
+          'postcode': address.postcode.text,
+          'state': address.state.text,
+          'city': address.city.text,
+        });
+      }
+
+      showSnackBar("Customer details saved successfully", Get.context!);
+      // Navigate to Customer List Page
+      Get.off(const CustomerListing());
+    } catch (e) {
+      showSnackBar("Error saving customer details: $e", Get.context!);
+    }
+  }
+
+  Future<void> fetchCustomers() async {
+    try {
+      var customersList = await databaseHelper.getCustomers();
+      customers.assignAll(customersList);
+    } catch (e) {
+      print("Error fetching customers: $e");
+    }
+  }
+
+  Future<void> removeCustomer(int index) async {
+    try {
+      var customer = customers[index];
+      await databaseHelper.deleteCustomer(customer['id']);
+      customers.removeAt(index);
+    } catch (e) {
+      print("Error removing customer: $e");
+    }
+  }
+
+  Future<void> loadCustomerDetails(Map<String, dynamic> customer) async {
+    pan.text = customer['pan'];
+    fullName.value.text = customer['full_name'];
+    email.text = customer['email'];
+    mobile.text = customer['phone'];
+
+    // Load addresses for the customer
+    addresses.assignAll((await databaseHelper.getAddresses(customer['id']))
+        as Iterable<Address>);
+  }
+
   @override
   void dispose() {
     pan.dispose();
     email.dispose();
     mobile.dispose();
+    databaseHelper.close();
     super.dispose();
   }
 }
