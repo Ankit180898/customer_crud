@@ -6,24 +6,32 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 
-class AddCustomer extends StatelessWidget {
-  
-  AddCustomer({super.key});
+class EditCustomer extends StatefulWidget {
+  final Map<String, dynamic> customer;
+  const EditCustomer({required this.customer, super.key});
 
+  @override
+  State<EditCustomer> createState() => _EditCustomerState();
+}
+
+class _EditCustomerState extends State<EditCustomer> {
   final controller = Get.put(ValidationController());
+
   final formKey = GlobalKey<FormState>();
+  @override
+  void initState() {
+    controller.loadCustomerDetails(widget.customer); // Pre-load customer data
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    if (controller.addresses.isEmpty) {
-      controller.addAddress();
-    }
-
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text(
-          "Customer CRUD",
+          "Edit Customer",
           style: TextStyle(
               fontWeight: FontWeight.bold, fontSize: 24, color: Colors.black),
         ),
@@ -36,24 +44,14 @@ class AddCustomer extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Padding(
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 15.0, vertical: 15.0),
-                  child: Text(
-                    "Add Customer Details",
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                        color: Colors.black),
-                  ),
-                ),
+                // Your input fields here, similar to AddCustomer
                 Obx(() {
                   return InputField(
                     icon: Iconsax.card,
-                    label: "PAN",                 
+                    label: "PAN",
+                    controller: controller.pan,
                     validator: (value) => controller.panValidator(value!),
                     onChanged: (value) {
-                      // verify pan if the pan format is matched
                       if (controller.panRequirement.hasMatch(value)) {
                         controller.verifyPAN(value);
                       }
@@ -137,15 +135,13 @@ class AddCustomer extends StatelessWidget {
                       fillColor: Colors.lightBlueAccent,
                       onPressed: () {
                         if (formKey.currentState!.validate()) {
-                          debugPrint("noice");
-                          // navigate to the success screen
-                          controller.saveCustomerDetails(context);
+                          controller.updateCustomerDetails(context,widget.customer['id']);
                         } else {
                           controller.showSnackBar("Fix the error", context);
                         }
                       },
                       child: const Text(
-                        'Submit',
+                        'Update',
                         style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,

@@ -195,7 +195,6 @@ class ValidationController extends GetxController {
     }
   }
 
-
   Future<void> removeCustomer(int index) async {
     try {
       var customer = customers[index];
@@ -215,6 +214,39 @@ class ValidationController extends GetxController {
     // Load addresses for the customer
     addresses.assignAll((await databaseHelper.getAddresses(customer['id']))
         as Iterable<Address>);
+  }
+
+  // updating the data
+  Future<void> updateCustomerDetails(
+      BuildContext context, int customerId) async {
+    try {
+      // Update customer details
+      await databaseHelper.updateCustomer({
+        'id': customerId, // Set this to the customer's ID
+        'pan': pan.value.text,
+        'full_name': fullName.value.text,
+        'email': email.value.text,
+        'phone': mobile.value.text,
+      });
+
+      // Update address
+      for (var address in addresses) {
+        await databaseHelper.updateAddress({
+          'customer_id': customerId,
+          'address_line1': address.addressLine1.text,
+          'address_line2': address.addressLine2.text,
+          'postcode': address.postcode.text,
+          'state': address.state.text,
+          'city': address.city.text,
+        });
+      }
+
+      showSnackBar("Customer details updated successfully", Get.context!);
+      // Navigate back to Customer Listing Page
+      Get.offAll(const CustomerListing());
+    } catch (e) {
+      showSnackBar("Error updating customer details: $e", Get.context!);
+    }
   }
 
   @override

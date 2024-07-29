@@ -1,4 +1,5 @@
 import 'package:customer_crud/controller/validation_controller.dart';
+import 'package:customer_crud/view/edit_customer.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
@@ -55,8 +56,11 @@ class _CustomerListingState extends State<CustomerListing> {
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(customer['email']),
-                      Text(customer['phone']),
+                      Text('Email: ${customer['phone']}'),
+                      Text('+91 ${customer['phone']}'),
+                      const SizedBox(
+                        height: 5,
+                      ),
                       SizedBox(
                         child: ListView.builder(
                             shrinkWrap: true,
@@ -74,29 +78,40 @@ class _CustomerListingState extends State<CustomerListing> {
                                   Text("Postcode: ${address.postcode.text}"),
                                   Text("State: ${address.state.text}"),
                                   Text("City: ${address.city.text}"),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 12.0),
-                                    child: Wrap(
-                                      children: [
-                                        GestureDetector(
-                                            onTap: () {},
-                                            child: Icon(Iconsax.edit)),
-                                        const SizedBox(
-                                          width: 12,
-                                        ),
-                                        GestureDetector(
-                                            onTap: () {
-                                              controller.removeCustomer(index);
-                                            },
-                                            child: Icon(Iconsax.trash)),
-                                      ],
-                                    ),
+                                  const SizedBox(
+                                    height: 5,
+                                  ),
+                                  Divider(
+                                    color: Colors.grey.withOpacity(0.3),
+                                  ),
+                                  const SizedBox(
+                                    height: 5,
                                   ),
                                 ],
                               );
                             }),
-                      )
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 12.0),
+                        child: Wrap(
+                          children: [
+                            GestureDetector(
+                                onTap: () {
+                                  Get.to(
+                                      () => EditCustomer(customer: customer));
+                                },
+                                child: Icon(Iconsax.edit)),
+                            const SizedBox(
+                              width: 12,
+                            ),
+                            GestureDetector(
+                                onTap: () {
+                                  controller.removeCustomer(index);
+                                },
+                                child: Icon(Iconsax.trash)),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                   onTap: () {
