@@ -46,7 +46,7 @@ class _CustomerListingState extends State<CustomerListing> {
                 child: ListTile(
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
-                      side: BorderSide(color: Colors.grey)),
+                      side: const BorderSide(color: Colors.grey)),
                   title: Text(
                     customer['full_name'],
                     style: const TextStyle(
@@ -66,7 +66,7 @@ class _CustomerListingState extends State<CustomerListing> {
                       SizedBox(
                         child: ListView.builder(
                             shrinkWrap: true,
-                            physics: NeverScrollableScrollPhysics(),
+                            physics: const NeverScrollableScrollPhysics(),
                             itemCount: controller.addresses.length,
                             itemBuilder: (context, index) {
                               var address = controller.addresses[index];
@@ -102,7 +102,7 @@ class _CustomerListingState extends State<CustomerListing> {
                                   Get.to(
                                       () => EditCustomer(customer: customer));
                                 },
-                                child: Icon(Iconsax.edit)),
+                                child: const Icon(Iconsax.edit)),
                             const SizedBox(
                               width: 12,
                             ),
@@ -110,7 +110,7 @@ class _CustomerListingState extends State<CustomerListing> {
                                 onTap: () {
                                   controller.removeCustomer(index);
                                 },
-                                child: Icon(Iconsax.trash)),
+                                child: const Icon(Iconsax.trash)),
                           ],
                         ),
                       ),

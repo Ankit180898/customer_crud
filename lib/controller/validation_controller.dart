@@ -206,23 +206,22 @@ class ValidationController extends GetxController {
   }
 
   Future<void> loadCustomerDetails(Map<String, dynamic> customer) async {
-    try {
+  try {
     pan.value.text = customer['pan'] ?? '';
     fullName.value.text = customer['full_name'] ?? '';
     email.text = customer['email'] ?? '';
     mobile.text = customer['phone'] ?? '';
-    debugPrint('PAN: ${email.text}'); // Add this line to check PAN value
-      
-        List<Map<String, dynamic>> addressMaps =
-            await databaseHelper.getAddresses(customer['id']);
+    debugPrint('PAN: ${email.text}'); // Check PAN value
 
-        addresses.assignAll(addressMaps.map((map) {
-          return Address.fromJson(map);
-        }).toList());
-      } catch (e) {
-        debugPrint("Error loading customer details: $e");
-      }
+    List<Map<String, dynamic>> addressMaps =
+        await databaseHelper.getAddresses(customer['id']);
+    print("db address: ${addressMaps.first}");
+    addresses.value = addressMaps.map((map) => Address.fromJson(map)).toList();
+    print("address: ${addresses[0].addressLine1.text}");
+  } catch (e) {
+    debugPrint("Error loading customer details: $e");
   }
+}
 
   // updating the data
   Future<void> updateCustomerDetails(

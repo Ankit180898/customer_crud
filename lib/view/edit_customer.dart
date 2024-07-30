@@ -20,7 +20,7 @@ class _EditCustomerState extends State<EditCustomer> {
   final formKey = GlobalKey<FormState>();
   @override
   void initState() {
-    controller.loadCustomerDetails(widget.customer);// Pre-load customer data
+    controller.loadCustomerDetails(widget.customer); // Pre-load customer data
 
     super.initState();
   }
@@ -101,6 +101,8 @@ class _EditCustomerState extends State<EditCustomer> {
                           physics: const NeverScrollableScrollPhysics(),
                           itemCount: controller.addresses.length,
                           itemBuilder: (context, index) {
+                            debugPrint(
+                                "address edit customer: ${controller.addresses[0].addressLine1.text}");
                             return AddressFormWidget(
                               index: index,
                               controller: controller,
